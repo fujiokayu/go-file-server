@@ -7,11 +7,8 @@ import (
 	"net/http"
 )
 
-type renderData struct {
-	Title string
-}
+func htmlHandler(w http.ResponseWriter, r *http.Request) {
 
-func htmlHandler0(w http.ResponseWriter, r *http.Request) {
 	t := template.Must(template.ParseFiles("index.html"))
 
 	m := map[string]string{
@@ -19,14 +16,18 @@ func htmlHandler0(w http.ResponseWriter, r *http.Request) {
 		"text":  "this page will be a simple file server",
 	}
 
-	// テンプレートを描画
 	if err := t.ExecuteTemplate(w, "index.html", m); err != nil {
 		log.Fatal(err)
 	}
 }
 
+func serveimage(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "images/gopher.jpg")
+}
+
 func main() {
-	http.HandleFunc("/", htmlHandler0)
+	http.HandleFunc("/", htmlHandler)
+	http.HandleFunc("/gopher.jpg", serveimage)
 
 	fmt.Print("Open http://localhost:8080/")
 	http.ListenAndServe(":8080", nil)
