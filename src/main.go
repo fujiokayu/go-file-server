@@ -9,6 +9,7 @@ import (
 
 func htmlHandler(w http.ResponseWriter, r *http.Request) {
 
+	http.StripPrefix("/", http.FileServer(http.Dir("./static")))
 	t := template.Must(template.ParseFiles("index.html"))
 
 	m := map[string]string{
@@ -21,13 +22,8 @@ func htmlHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func serveimage(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "images/gopher.jpg")
-}
-
 func main() {
 	http.HandleFunc("/", htmlHandler)
-	http.HandleFunc("/gopher.jpg", serveimage)
 
 	fmt.Print("Open http://localhost:8080/")
 	http.ListenAndServe(":8080", nil)
