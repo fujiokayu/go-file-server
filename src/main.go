@@ -10,7 +10,7 @@ import (
 func htmlHandler(w http.ResponseWriter, r *http.Request) {
 
 	http.StripPrefix("/", http.FileServer(http.Dir("./static")))
-	t := template.Must(template.ParseFiles("index.html"))
+	t := template.Must(template.ParseFiles("static/index.html"))
 
 	m := map[string]string{
 		"title": "golang file server",
