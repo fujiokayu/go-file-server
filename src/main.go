@@ -14,11 +14,12 @@ func htmlHandler(w http.ResponseWriter, r *http.Request) {
 	t := template.Must(template.ParseFiles("static/index.html"))
 
 	files, _ := ioutil.ReadDir("./contents")
+	fileNames := []string{}
 	for _, f := range files {
-		fmt.Println(f.Name())
+		fileNames = append(fileNames, f.Name())
 	}
 
-	if err := t.ExecuteTemplate(w, "index.html", files); err != nil {
+	if err := t.ExecuteTemplate(w, "index.html", fileNames); err != nil {
 		log.Fatal(err)
 	}
 }
