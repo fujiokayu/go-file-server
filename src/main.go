@@ -10,7 +10,7 @@ import (
 
 func htmlHandler(w http.ResponseWriter, r *http.Request) {
 
-	http.StripPrefix("/", http.FileServer(http.Dir("/static/")))
+	http.StripPrefix("/", http.FileServer(http.Dir("./contents")))
 	t := template.Must(template.ParseFiles("static/index.html"))
 
 	files, _ := ioutil.ReadDir("./contents")
