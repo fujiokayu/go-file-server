@@ -9,7 +9,10 @@ import (
 	"strings"
 )
 
-func htmlHandler(w http.ResponseWriter, r *http.Request) {
+type MyHandler struct {
+}
+
+func (this *MyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	path := r.URL.Path[1:]
 	fmt.Println("string(path)")
@@ -45,7 +48,7 @@ func htmlHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	http.HandleFunc("/", htmlHandler)
+	http.Handle("/", new(MyHandler))
 
 	fmt.Println("Open http://localhost:8080/")
 	http.ListenAndServe(":8080", nil)
