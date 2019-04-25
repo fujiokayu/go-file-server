@@ -3,28 +3,48 @@ package main
 import (
 	"fmt"
 	"html/template"
+	"io/ioutil"
 	"log"
 	"net/http"
+	"strings"
 )
 
-func htmlHandler(w http.ResponseWriter, r *http.Request) {
+type MyHandler struct {
+}
 
-	http.StripPrefix("/", http.FileServer(http.Dir("./static")))
-	t := template.Must(template.ParseFiles("static/index.html"))
+func (this *MyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
-	m := map[string]string{
-		"title": "golang file server",
-		"text":  "this page will be a simple file server",
-	}
+	path := r.URL.Path[1:]
+	fmt.Println(string(path))
+	if string(path) == "" {
+		http.StripPrefix("/", http.FileServer(http.Dir("./contents")))
+		t := template.Must(template.ParseFiles("static/index.html"))
 
-	if err := t.ExecuteTemplate(w, "index.html", m); err != nil {
-		log.Fatal(err)
+		files, _ := ioutil.ReadDir("./contents")
+		fileNames := []string{}
+		for _, f := range files {
+			fileNames = append(fileNames, f.Name())
+		}
+
+		if err := t.ExecuteTemplate(w, "index.html", fileNames); err != nil {
+			log.Fatal(err)
+		}
+	} else if strings.HasSuffix(string(path), ".ico") {
+		return
+	} else {
+		fmt.Println("download file")
+		data, err := ioutil.ReadFile(string(path))
+		if err == nil {
+			w.Header().Set("Content-Disposition", "attachment; filename="+string(path))
+			w.Header().Set("Content-Type", r.Header.Get("Content-Type"))
+			w.Write(data)
+		}
 	}
 }
 
 func main() {
-	http.HandleFunc("/", htmlHandler)
+	http.Handle("/", new(MyHandler))
 
-	fmt.Print("Open http://localhost:8080/")
+	fmt.Println("Open http://localhost:8080/")
 	http.ListenAndServe(":8080", nil)
 }
