@@ -9,10 +9,11 @@ import (
 	"strings"
 )
 
+// MyHandler is a object of this http server
 type MyHandler struct {
 }
 
-func (this *MyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (MyHandler *MyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	path := r.URL.Path[1:]
 	fmt.Println(string(path))
