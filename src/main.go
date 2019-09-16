@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 )
 
@@ -35,7 +36,14 @@ func (MyHandler *MyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	} else {
 		log.Println("download file")
 		data, err := ioutil.ReadFile(string(path))
-		if err == nil {
+		if err != nil {
+			log.Println(err)
+		} else {
+			info, err := os.Stat(string(path))
+			if err != nil {
+				log.Println("there was an error to get file stats.", err)
+			}
+
 			w.Header().Set("Content-Disposition", "attachment; filename="+string(path))
 			w.Header().Set("Content-Type", r.Header.Get("Content-Type"))
 			w.Write(data)
